@@ -92,7 +92,10 @@
 #define RT_USING_DEVICE_IPC
 #define RT_PIPE_BUFSZ 512
 #define RT_USING_SERIAL
+<<<<<<< HEAD
 #define RT_SERIAL_USING_DMA
+=======
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
 #define RT_USING_HWTIMER
 #define RT_USING_I2C
 #define RT_USING_I2C_BITOPS
@@ -183,8 +186,11 @@
 
 /* On-chip Peripheral Drivers */
 
+<<<<<<< HEAD
 #define BSP_USING_GPIO
 
+=======
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
 /* UART Drivers */
 
 #define BSP_USING_UART0
@@ -197,6 +203,13 @@
 
 /* I2C Drivers */
 
+<<<<<<< HEAD
+=======
+#define BSP_USING_I2C
+#define BSP_I2C_SCL 98
+#define BSP_I2C_SDA 99
+#define BSP_I2C_BUS_NAME "i2c0"
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
 
 /* PWM module */
 

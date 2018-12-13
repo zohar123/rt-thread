@@ -9,6 +9,7 @@ src = Split("""
 board.c
 """)
 
+<<<<<<< HEAD
 # add gpio driver code
 if  GetDepend(['BSP_USING_GPIO']):
     src += ['drv_gpio.c']
@@ -48,6 +49,28 @@ if  GetDepend('BSP_USING_HWTIMER0') or GetDepend('BSP_USING_HWTIMER1') or  GetDe
 # add hwtimer driver code
 if GetDepend(['BSP_USING_WDT']):
     src += ['drv_iwg.c']
+=======
+if GetDepend(['RT_USING_SERIAL']):
+    src += ['drv_uart.c']
+if GetDepend(['RT_USING_PIN']):
+    src += ['drv_gpio.c']
+if GetDepend(['RT_USING_SPI']):
+    src += ['drv_spi.c']
+if GetDepend(['RT_USING_I2C']):
+    src += ['drv_i2c.c']
+if GetDepend(['BSP_USING_EXT_SRAM']):
+    src += ['drv_sram.c']
+if GetDepend(['BSP_USING_NOR_FLASH']):
+    src += ['drv_nor_flash.c']
+if GetDepend(['RT_USING_PWM']):
+    src += ['drv_pwm.c']
+if GetDepend(['RT_USING_RTC']):
+    src += ['drv_rtc.c']
+if GetDepend(['RT_USING_HWTIMER']):
+    src += ['drv_hwtimer.c']
+if GetDepend(['RT_USING_WDT']):
+    src += ['drv_wdt.c']
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
 
 CPPPATH = [cwd]
 

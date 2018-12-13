@@ -25,6 +25,7 @@ int rt_hw_sram_init(void)
     PORT->PORTM_SEL1 = 0x2AA; /* PM16 => OEN、PM17 => WEN、PM18 => NORFL_CSN、PM19 => SDRAM_CSN、PM20 => SRAM_CSN、PM21 => SDRAM_CKE */
 
     /* 配置SRAM前需要刷新下SDRAM控制器 */
+<<<<<<< HEAD
 
     SYS->CLKEN |= (1 << SYS_CLKEN_SDRAM_Pos);
 
@@ -36,6 +37,22 @@ int rt_hw_sram_init(void)
     {
     }
     SYS->CLKEN &= ~(1 << SYS_CLKEN_SDRAM_Pos);
+=======
+    do
+    {
+        SYS->CLKEN |= (1 << SYS_CLKEN_SDRAM_Pos);
+
+        while (SDRAMC->REFDONE == 0)
+            ;
+        SDRAMC->REFRESH &= ~(1 << SDRAMC_REFRESH_EN_Pos);
+
+        for (i = 0; i < 1000; i++)
+        {
+        }
+        SYS->CLKEN &= ~(1 << SYS_CLKEN_SDRAM_Pos);
+    }
+    while (0);
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
 
     SYS->CLKEN |= (1 << SYS_CLKEN_RAMC_Pos);
 

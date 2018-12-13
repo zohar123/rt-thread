@@ -10,7 +10,11 @@
       <TargetName>rt-thread</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+<<<<<<< HEAD
       <pCCUsed>5060528::V5.06 update 5 (build 528)::ARMCC</pCCUsed>
+=======
+      <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -397,20 +401,57 @@
               <FilePath>drivers\board.c</FilePath>
             </File>
             <File>
+<<<<<<< HEAD
+=======
+              <FileName>drv_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>drivers\drv_uart.c</FilePath>
+            </File>
+            <File>
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
               <FileName>drv_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>drivers\drv_gpio.c</FilePath>
             </File>
             <File>
+<<<<<<< HEAD
               <FileName>drv_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>drivers\drv_uart.c</FilePath>
+=======
+              <FileName>drv_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>drivers\drv_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>drivers\drv_i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>drivers\drv_pwm.c</FilePath>
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
             </File>
             <File>
               <FileName>drv_rtc.c</FileName>
               <FileType>1</FileType>
               <FilePath>drivers\drv_rtc.c</FilePath>
             </File>
+<<<<<<< HEAD
+=======
+            <File>
+              <FileName>drv_hwtimer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>drivers\drv_hwtimer.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_wdt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>drivers\drv_wdt.c</FilePath>
+            </File>
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
           </Files>
         </Group>
         <Group>
@@ -731,7 +772,11 @@
                   <MiscControls></MiscControls>
                   <Define> </Define>
                   <Undefine> </Undefine>
+<<<<<<< HEAD
                   <IncludePath> </IncludePath>
+=======
+                  <IncludePath></IncludePath>
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
                 </VariousControls>
               </Cads>
               <Aads>

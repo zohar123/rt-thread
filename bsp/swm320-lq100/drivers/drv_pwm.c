@@ -13,6 +13,7 @@
 #include <rtdevice.h>
 #include <board.h>
 
+<<<<<<< HEAD
 #define SWM320_PWM_DEVICE(pwm) (struct swm320_pwm_dev *)(pwm)
 
 struct swm320_pwm_dev
@@ -21,6 +22,8 @@ struct swm320_pwm_dev
     rt_uint32_t pwm_periph;
 };
 
+=======
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
 static rt_err_t swm320_pwm_control(struct rt_device_pwm *device,
                                    int cmd,
                                    void *arg);
@@ -36,12 +39,16 @@ static rt_err_t swm320_pwm_control(struct rt_device_pwm *device,
                                    void *arg)
 {
     struct rt_pwm_configuration configuration = {0};
+<<<<<<< HEAD
     struct rt_device *dev = &device->parent;
+=======
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
 
     RT_ASSERT(device)
 
     configuration = *(struct rt_pwm_configuration *)arg;
 
+<<<<<<< HEAD
     switch (cmd)
     {
     case PWM_CMD_ENABLE:
@@ -89,6 +96,218 @@ static rt_err_t swm320_pwm_control(struct rt_device_pwm *device,
         break;
     default:
         break;
+=======
+    if (&swm320_device_pwm0 == device)
+    {
+        switch (cmd)
+        {
+        case PWM_CMD_ENABLE:
+            if (2 == configuration.channel)
+            {
+                PWM_Start(PWM0, 1, 1);
+            }
+            if (1 == configuration.channel)
+            {
+                PWM_Start(PWM0, 0, 1);
+            }
+            if (0 == configuration.channel)
+            {
+                PWM_Start(PWM0, 1, 0);
+            }
+            if (3 == configuration.channel)
+            {
+                PWM_Start(PWM0, 0, 0);
+            }
+            break;
+        case PWM_CMD_DISABLE:
+            if (2 == configuration.channel)
+            {
+                PWM_Stop(PWM0, 1, 1);
+            }
+            if (1 == configuration.channel)
+            {
+                PWM_Stop(PWM0, 0, 1);
+            }
+            if (0 == configuration.channel)
+            {
+                PWM_Stop(PWM0, 1, 0);
+            }
+            if (3 == configuration.channel)
+            {
+                PWM_Stop(PWM0, 0, 0);
+            }
+            break;
+        case PWM_CMD_SET:
+            PWM_SetHDuty(PWM0, configuration.channel, configuration.pulse);
+            PWM_SetCycle(PWM0, configuration.channel, configuration.period);
+            break;
+        case PWM_CMD_GET:
+            configuration.pulse = PWM_GetHDuty(PWM0, configuration.channel);
+            break;
+        default:
+            break;
+        }
+    }
+    else if (&swm320_device_pwm1 == device)
+    {
+        switch (cmd)
+        {
+        case PWM_CMD_ENABLE:
+            if (2 == configuration.channel)
+            {
+                PWM_Start(PWM1, 1, 1);
+            }
+            if (1 == configuration.channel)
+            {
+                PWM_Start(PWM1, 0, 1);
+            }
+            if (0 == configuration.channel)
+            {
+                PWM_Start(PWM1, 1, 0);
+            }
+            if (3 == configuration.channel)
+            {
+                PWM_Start(PWM1, 0, 0);
+            }
+            break;
+        case PWM_CMD_DISABLE:
+            if (2 == configuration.channel)
+            {
+                PWM_Stop(PWM1, 1, 1);
+            }
+            if (1 == configuration.channel)
+            {
+                PWM_Stop(PWM1, 0, 1);
+            }
+            if (0 == configuration.channel)
+            {
+                PWM_Stop(PWM1, 1, 0);
+            }
+            if (3 == configuration.channel)
+            {
+                PWM_Stop(PWM1, 0, 0);
+            }
+            break;
+        case PWM_CMD_SET:
+            PWM_SetHDuty(PWM1, configuration.channel, configuration.pulse);
+            PWM_SetCycle(PWM1, configuration.channel, configuration.period);
+            break;
+        case PWM_CMD_GET:
+            configuration.pulse = PWM_GetHDuty(PWM1, configuration.channel);
+            break;
+
+        default:
+            break;
+        }
+    }
+    else if (&swm320_device_pwm2 == device)
+    {
+        switch (cmd)
+        {
+        case PWM_CMD_ENABLE:
+            if (2 == configuration.channel)
+            {
+                PWM_Start(PWM2, 1, 1);
+            }
+            if (1 == configuration.channel)
+            {
+                PWM_Start(PWM2, 0, 1);
+            }
+            if (0 == configuration.channel)
+            {
+                PWM_Start(PWM2, 1, 0);
+            }
+            if (3 == configuration.channel)
+            {
+                PWM_Start(PWM2, 0, 0);
+            }
+            break;
+        case PWM_CMD_DISABLE:
+            if (2 == configuration.channel)
+            {
+                PWM_Stop(PWM2, 1, 1);
+            }
+            if (1 == configuration.channel)
+            {
+                PWM_Stop(PWM2, 0, 1);
+            }
+            if (0 == configuration.channel)
+            {
+                PWM_Stop(PWM2, 1, 0);
+            }
+            if (3 == configuration.channel)
+            {
+                PWM_Stop(PWM2, 0, 0);
+            }
+            break;
+        case PWM_CMD_SET:
+            PWM_SetHDuty(PWM2, configuration.channel, configuration.pulse);
+            PWM_SetCycle(PWM2, configuration.channel, configuration.period);
+            break;
+        case PWM_CMD_GET:
+            configuration.pulse = PWM_GetHDuty(PWM2, configuration.channel);
+            break;
+
+        default:
+            break;
+        }
+    }
+    else if (&swm320_device_pwm3 == device)
+    {
+        switch (cmd)
+        {
+        case PWM_CMD_ENABLE:
+            if (2 == configuration.channel)
+            {
+                PWM_Start(PWM3, 1, 1);
+            }
+            if (1 == configuration.channel)
+            {
+                PWM_Start(PWM3, 0, 1);
+            }
+            if (0 == configuration.channel)
+            {
+                PWM_Start(PWM3, 1, 0);
+            }
+            if (3 == configuration.channel)
+            {
+                PWM_Start(PWM3, 0, 0);
+            }
+            break;
+        case PWM_CMD_DISABLE:
+            if (2 == configuration.channel)
+            {
+                PWM_Stop(PWM3, 1, 1);
+            }
+            if (1 == configuration.channel)
+            {
+                PWM_Stop(PWM3, 0, 1);
+            }
+            if (0 == configuration.channel)
+            {
+                PWM_Stop(PWM3, 1, 0);
+            }
+            if (3 == configuration.channel)
+            {
+                PWM_Stop(PWM3, 0, 0);
+            }
+            break;
+        case PWM_CMD_SET:
+            PWM_SetHDuty(PWM3, configuration.channel, configuration.pulse);
+            PWM_SetCycle(PWM3, configuration.channel, configuration.period);
+            break;
+        case PWM_CMD_GET:
+            configuration.pulse = PWM_GetHDuty(PWM3, configuration.channel);
+            break;
+
+        default:
+            break;
+        }
+    }
+    else
+    {
+        return -RT_ERROR;
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
     }
 
     return RT_EOK;
@@ -119,7 +338,11 @@ static int pwm_register(PWM_TypeDef *PWMx, const char *name)
         PWM_Init(PWM0, &PWM_initStruct);
         PORT_Init(PORTA, PIN4, FUNMUX0_PWM0A_OUT, 0);
         PORT_Init(PORTA, PIN10, FUNMUX0_PWM0B_OUT, 0);
+<<<<<<< HEAD
         user_data = PWM0;
+=======
+
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
         device_pwm = &swm320_device_pwm0;
     }
     else if (PWMx == PWM1)
@@ -127,7 +350,10 @@ static int pwm_register(PWM_TypeDef *PWMx, const char *name)
         PWM_Init(PWM1, &PWM_initStruct);
         PORT_Init(PORTA, PIN5, FUNMUX1_PWM1A_OUT, 0);
         PORT_Init(PORTA, PIN9, FUNMUX1_PWM1B_OUT, 0);
+<<<<<<< HEAD
         user_data = PWM1;
+=======
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
         device_pwm = &swm320_device_pwm1;
     }
     else if (PWMx == PWM2)
@@ -135,7 +361,10 @@ static int pwm_register(PWM_TypeDef *PWMx, const char *name)
         PWM_Init(PWM2, &PWM_initStruct);
         PORT_Init(PORTP, PIN0, FUNMUX0_PWM2A_OUT, 0);
         PORT_Init(PORTP, PIN2, FUNMUX0_PWM2B_OUT, 0);
+<<<<<<< HEAD
         user_data = PWM2;
+=======
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
         device_pwm = &swm320_device_pwm2;
     }
     else if (PWMx == PWM3)
@@ -143,7 +372,10 @@ static int pwm_register(PWM_TypeDef *PWMx, const char *name)
         PWM_Init(PWM3, &PWM_initStruct);
         PORT_Init(PORTP, PIN1, FUNMUX1_PWM3A_OUT, 0);
         PORT_Init(PORTP, PIN3, FUNMUX1_PWM3B_OUT, 0);
+<<<<<<< HEAD
         user_data = PWM3;
+=======
+>>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
         device_pwm = &swm320_device_pwm3;
     }
     else
