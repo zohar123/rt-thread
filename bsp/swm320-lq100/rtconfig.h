@@ -197,10 +197,6 @@
 
 /* I2C Drivers */
 
-#define BSP_USING_I2C
-#define BSP_I2C_SCL 98
-#define BSP_I2C_SDA 99
-#define BSP_I2C_BUS_NAME "i2c0"
 
 /* PWM module */
 
