@@ -14,28 +14,28 @@
 #include <board.h>
 
 #ifdef BSP_USING_HWTIMER0
-<<<<<<< HEAD
-static rt_hwtimer_t swm320_timer0;
+    <<< <<< < HEAD
+    static rt_hwtimer_t swm320_timer0;
 #endif //BSP_USING_HWTIMER0
 
 #ifdef BSP_USING_HWTIMER1
-static rt_hwtimer_t swm320_timer1;
+    static rt_hwtimer_t swm320_timer1;
 #endif //BSP_USING_HWTIMER1
 
 #ifdef BSP_USING_HWTIMER2
-static rt_hwtimer_t swm320_timer2;
+    static rt_hwtimer_t swm320_timer2;
 #endif //BSP_USING_HWTIMER2
 
 #ifdef BSP_USING_HWTIMER3
-static rt_hwtimer_t swm320_timer3;
+    static rt_hwtimer_t swm320_timer3;
 #endif //BSP_USING_HWTIMER3
 
 #ifdef BSP_USING_HWTIMER4
-static rt_hwtimer_t swm320_timer4;
+    static rt_hwtimer_t swm320_timer4;
 #endif //BSP_USING_HWTIMER4
 
 #ifdef BSP_USING_HWTIMER5
-static rt_hwtimer_t swm320_timer5;
+    static rt_hwtimer_t swm320_timer5;
 #endif //BSP_USING_HWTIMER5
 
 static rt_hwtimer_mode_t swm320_timer0_mode = HWTIMER_MODE_PERIOD;
@@ -44,7 +44,7 @@ static rt_hwtimer_mode_t swm320_timer2_mode = HWTIMER_MODE_PERIOD;
 static rt_hwtimer_mode_t swm320_timer3_mode = HWTIMER_MODE_PERIOD;
 static rt_hwtimer_mode_t swm320_timer4_mode = HWTIMER_MODE_PERIOD;
 static rt_hwtimer_mode_t swm320_timer5_mode = HWTIMER_MODE_PERIOD;
-=======
+== == == =
     static rt_hwtimer_t swm320_timer0;
 #endif //BSP_USING_HWTIMER0
 
@@ -74,12 +74,12 @@ static volatile rt_hwtimer_mode_t swm320_timer2_mode = HWTIMER_MODE_PERIOD;
 static volatile rt_hwtimer_mode_t swm320_timer3_mode = HWTIMER_MODE_PERIOD;
 static volatile rt_hwtimer_mode_t swm320_timer4_mode = HWTIMER_MODE_PERIOD;
 static volatile rt_hwtimer_mode_t swm320_timer5_mode = HWTIMER_MODE_PERIOD;
->>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
+>>> >>> > 528dd13ecbe479f3f3d6142406ad1b87261ac969
 
 static void swm320_hwtimer_init(struct rt_hwtimer_device *timer,
                                 rt_uint32_t state)
 {
-<<<<<<< HEAD
+    <<< <<< < HEAD
     rt_device_t dev = &timer->parent;
 
     TIMR_Init(dev->user_data,
@@ -90,9 +90,9 @@ static void swm320_hwtimer_init(struct rt_hwtimer_device *timer,
         TIMR_Start(dev->user_data);
     else if (0 == state)
         TIMR_Stop(dev->user_data);
-=======
+    == == == =
 #ifdef BSP_USING_HWTIMER0
-    if (&swm320_timer0 == timer)
+        if (&swm320_timer0 == timer)
     {
         TIMR_Init(TIMR0, TIMR_MODE_TIMER, SystemCoreClock / timer->freq, 1);
         if (1 == state)
@@ -156,19 +156,19 @@ static void swm320_hwtimer_init(struct rt_hwtimer_device *timer,
             TIMR_Stop(TIMR5);
     }
 #endif //BSP_USING_HWTIMER5
->>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
+    >>> >>> > 528dd13ecbe479f3f3d6142406ad1b87261ac969
 }
 
 static rt_err_t swm320_hwtimer_start(struct rt_hwtimer_device *timer,
                                      rt_uint32_t cnt,
                                      rt_hwtimer_mode_t mode)
 {
-<<<<<<< HEAD
+    <<< <<< < HEAD
     TIMR_Start(timer->parent.user_data);
-=======
+    == == == =
 #ifdef BSP_USING_HWTIMER0
-    if (&swm320_timer0 == timer)
-        TIMR_Start(TIMR0);
+        if (&swm320_timer0 == timer)
+            TIMR_Start(TIMR0);
 #endif //BSP_USING_HWTIMER0
 
 #ifdef BSP_USING_HWTIMER1
@@ -195,19 +195,19 @@ static rt_err_t swm320_hwtimer_start(struct rt_hwtimer_device *timer,
     if (&swm320_timer5 == timer)
         TIMR_Start(TIMR5);
 #endif //BSP_USING_HWTIMER5
->>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
+    >>> >>> > 528dd13ecbe479f3f3d6142406ad1b87261ac969
 
     return RT_EOK;
 }
 
 static void swm320_hwtimer_stop(struct rt_hwtimer_device *timer)
 {
-<<<<<<< HEAD
+    <<< <<< < HEAD
     TIMR_Stop(timer->parent.user_data);
-=======
+    == == == =
 #ifdef BSP_USING_HWTIMER0
-    if (&swm320_timer0 == timer)
-        TIMR_Stop(TIMR0);
+        if (&swm320_timer0 == timer)
+            TIMR_Stop(TIMR0);
 #endif //BSP_USING_HWTIMER0
 
 #ifdef BSP_USING_HWTIMER1
@@ -234,19 +234,19 @@ static void swm320_hwtimer_stop(struct rt_hwtimer_device *timer)
     if (&swm320_timer5 == timer)
         TIMR_Stop(TIMR5);
 #endif //BSP_USING_HWTIMER5
->>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
+    >>> >>> > 528dd13ecbe479f3f3d6142406ad1b87261ac969
 }
 
 static rt_uint32_t swm320_hwtimer_count_get(struct rt_hwtimer_device *timer)
 {
     rt_uint32_t hwtimer_count = 0;
 
-<<<<<<< HEAD
+    <<< <<< < HEAD
     hwtimer_count = TIMR_GetCurValue(timer->parent.user_data);
-=======
+    == == == =
 #ifdef BSP_USING_HWTIMER0
-    if (&swm320_timer0 == timer)
-        hwtimer_count = TIMR_GetCurValue(TIMR0);
+        if (&swm320_timer0 == timer)
+            hwtimer_count = TIMR_GetCurValue(TIMR0);
 #endif //BSP_USING_HWTIMER0
 
 #ifdef BSP_USING_HWTIMER1
@@ -273,7 +273,7 @@ static rt_uint32_t swm320_hwtimer_count_get(struct rt_hwtimer_device *timer)
     if (&swm320_timer5 == timer)
         hwtimer_count = TIMR_GetCurValue(TIMR5);
 #endif //BSP_USING_HWTIMER5
->>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
+    >>> >>> > 528dd13ecbe479f3f3d6142406ad1b87261ac969
 
     return hwtimer_count;
 }
@@ -281,13 +281,13 @@ static rt_uint32_t swm320_hwtimer_count_get(struct rt_hwtimer_device *timer)
 static void swm320_hwtimer_freq_set(struct rt_hwtimer_device *timer, void *freq)
 {
     uint32_t period = SystemCoreClock / *(uint32_t *)freq;
-<<<<<<< HEAD
+    <<< <<< < HEAD
     TIMR_SetPeriod(timer->parent.user_data, period);
-=======
+    == == == =
 
 #ifdef BSP_USING_HWTIMER0
-    if (&swm320_timer0 == timer)
-        TIMR_SetPeriod(TIMR0, period);
+        if (&swm320_timer0 == timer)
+            TIMR_SetPeriod(TIMR0, period);
 #endif //BSP_USING_HWTIMER0
 
 #ifdef BSP_USING_HWTIMER1
@@ -314,7 +314,7 @@ static void swm320_hwtimer_freq_set(struct rt_hwtimer_device *timer, void *freq)
     if (&swm320_timer5 == timer)
         TIMR_SetPeriod(TIMR5, period);
 #endif //BSP_USING_HWTIMER5
->>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
+    >>> >>> > 528dd13ecbe479f3f3d6142406ad1b87261ac969
 }
 
 static void swm320_hwtimer_info_get(struct rt_hwtimer_device *timer, void *info)
@@ -323,11 +323,11 @@ static void swm320_hwtimer_info_get(struct rt_hwtimer_device *timer, void *info)
 }
 
 static rt_uint32_t swm320_hwtimer_mode_set(struct rt_hwtimer_device *timer,
-<<<<<<< HEAD
-                                           void *mode)
-=======
+        <<< <<< < HEAD
         void *mode)
->>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
+== == == =
+    void *mode)
+>>> >>> > 528dd13ecbe479f3f3d6142406ad1b87261ac969
 {
 #ifdef BSP_USING_HWTIMER0
     if (&swm320_timer0 == timer)
@@ -441,8 +441,8 @@ static rt_uint32_t swm320_hwtimer_mode_set(struct rt_hwtimer_device *timer,
 }
 
 static rt_err_t swm320_hwtimer_control(struct rt_hwtimer_device *timer,
-                                       rt_uint32_t cmd,
-                                       void *args)
+                                           rt_uint32_t cmd,
+                                           void *args)
 {
     switch (cmd)
     {
@@ -514,28 +514,7 @@ void TIMR5_Handler(void)
 #endif //BSP_USING_HWTIMER5
 
 const static struct rt_hwtimer_ops swm320_hwtimer_ops =
-<<<<<<< HEAD
-    {
-        swm320_hwtimer_init,
-        swm320_hwtimer_start,
-        swm320_hwtimer_stop,
-        swm320_hwtimer_count_get,
-        swm320_hwtimer_control};
-const struct rt_hwtimer_info swm320_hwtimer_info =
-    {
-        32000, /*默认使用最低频率工作，即32K*/
-        1,     /*2的32次方*/
-        4294967295,
-        0};
-
-int rt_hw_hwtimer_init(void)
-{
-    void *user_data = RT_NULL;
-
-#ifdef BSP_USING_HWTIMER0
-    user_data = TIMR0;
-    swm320_timer0.parent.user_data = user_data;
-=======
+        <<< <<< < HEAD
 {
     swm320_hwtimer_init,
     swm320_hwtimer_start,
@@ -553,68 +532,91 @@ const struct rt_hwtimer_info swm320_hwtimer_info =
 
 int rt_hw_hwtimer_init(void)
 {
+    void *user_data = RT_NULL;
+
 #ifdef BSP_USING_HWTIMER0
->>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
-    swm320_timer0.info = &swm320_hwtimer_info;
-    swm320_timer0.ops = &swm320_hwtimer_ops;
-    rt_device_hwtimer_register(&swm320_timer0, "timer0", TIMR0);
+    user_data = TIMR0;
+    swm320_timer0.parent.user_data = user_data;
+    == == == =
+    {
+        swm320_hwtimer_init,
+        swm320_hwtimer_start,
+        swm320_hwtimer_stop,
+        swm320_hwtimer_count_get,
+        swm320_hwtimer_control
+    };
+    const struct rt_hwtimer_info swm320_hwtimer_info =
+    {
+        32000, /*默认使用最低频率工作，即32K*/
+        1,     /*2的32次方*/
+        4294967295,
+        0
+    };
+
+    int rt_hw_hwtimer_init(void)
+    {
+#ifdef BSP_USING_HWTIMER0
+        >>> >>> > 528dd13ecbe479f3f3d6142406ad1b87261ac969
+        swm320_timer0.info = &swm320_hwtimer_info;
+        swm320_timer0.ops = &swm320_hwtimer_ops;
+        rt_device_hwtimer_register(&swm320_timer0, "timer0", TIMR0);
 #endif //BSP_USING_HWTIMER0
 
 #ifdef BSP_USING_HWTIMER1
-<<<<<<< HEAD
-    user_data = TIMR1;
-    swm320_timer1.parent.user_data = user_data;
-=======
->>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
-    swm320_timer1.info = &swm320_hwtimer_info;
-    swm320_timer1.ops = &swm320_hwtimer_ops;
-    rt_device_hwtimer_register(&swm320_timer1, "timer1", TIMR1);
+        <<< <<< < HEAD
+        user_data = TIMR1;
+        swm320_timer1.parent.user_data = user_data;
+        == == == =
+            >>> >>> > 528dd13ecbe479f3f3d6142406ad1b87261ac969
+            swm320_timer1.info = &swm320_hwtimer_info;
+        swm320_timer1.ops = &swm320_hwtimer_ops;
+        rt_device_hwtimer_register(&swm320_timer1, "timer1", TIMR1);
 #endif //BSP_USING_HWTIMER1
 
 #ifdef BSP_USING_HWTIMER2
-<<<<<<< HEAD
-    user_data = TIMR2;
-    swm320_timer2.parent.user_data = user_data;
-=======
->>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
-    swm320_timer2.info = &swm320_hwtimer_info;
-    swm320_timer2.ops = &swm320_hwtimer_ops;
-    rt_device_hwtimer_register(&swm320_timer2, "timer2", TIMR2);
+        <<< <<< < HEAD
+        user_data = TIMR2;
+        swm320_timer2.parent.user_data = user_data;
+        == == == =
+            >>> >>> > 528dd13ecbe479f3f3d6142406ad1b87261ac969
+            swm320_timer2.info = &swm320_hwtimer_info;
+        swm320_timer2.ops = &swm320_hwtimer_ops;
+        rt_device_hwtimer_register(&swm320_timer2, "timer2", TIMR2);
 #endif //BSP_USING_HWTIMER2
 
 #ifdef BSP_USING_HWTIMER3
-<<<<<<< HEAD
-    user_data = TIMR3;
-    swm320_timer3.parent.user_data = user_data;
-=======
->>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
-    swm320_timer3.info = &swm320_hwtimer_info;
-    swm320_timer3.ops = &swm320_hwtimer_ops;
-    rt_device_hwtimer_register(&swm320_timer3, "timer3", TIMR3);
+        <<< <<< < HEAD
+        user_data = TIMR3;
+        swm320_timer3.parent.user_data = user_data;
+        == == == =
+            >>> >>> > 528dd13ecbe479f3f3d6142406ad1b87261ac969
+            swm320_timer3.info = &swm320_hwtimer_info;
+        swm320_timer3.ops = &swm320_hwtimer_ops;
+        rt_device_hwtimer_register(&swm320_timer3, "timer3", TIMR3);
 
 #endif //BSP_USING_HWTIMER3
 #ifdef BSP_USING_HWTIMER4
-<<<<<<< HEAD
-    user_data = TIMR4;
-    swm320_timer4.parent.user_data = user_data;
-=======
->>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
-    swm320_timer4.info = &swm320_hwtimer_info;
-    swm320_timer4.ops = &swm320_hwtimer_ops;
-    rt_device_hwtimer_register(&swm320_timer4, "timer4", TIMR4);
+        <<< <<< < HEAD
+        user_data = TIMR4;
+        swm320_timer4.parent.user_data = user_data;
+        == == == =
+            >>> >>> > 528dd13ecbe479f3f3d6142406ad1b87261ac969
+            swm320_timer4.info = &swm320_hwtimer_info;
+        swm320_timer4.ops = &swm320_hwtimer_ops;
+        rt_device_hwtimer_register(&swm320_timer4, "timer4", TIMR4);
 #endif //BSP_USING_HWTIMER4
 
 #ifdef BSP_USING_HWTIMER5
-<<<<<<< HEAD
-    user_data = TIMR5;
-    swm320_timer5.parent.user_data = user_data;
-=======
->>>>>>> 528dd13ecbe479f3f3d6142406ad1b87261ac969
-    swm320_timer5.info = &swm320_hwtimer_info;
-    swm320_timer5.ops = &swm320_hwtimer_ops;
-    rt_device_hwtimer_register(&swm320_timer5, "timer5", TIMR5);
+        <<< <<< < HEAD
+        user_data = TIMR5;
+        swm320_timer5.parent.user_data = user_data;
+        == == == =
+            >>> >>> > 528dd13ecbe479f3f3d6142406ad1b87261ac969
+            swm320_timer5.info = &swm320_hwtimer_info;
+        swm320_timer5.ops = &swm320_hwtimer_ops;
+        rt_device_hwtimer_register(&swm320_timer5, "timer5", TIMR5);
 #endif //BSP_USING_HWTIMER5o
 
-    return 0;
-}
-INIT_DEVICE_EXPORT(rt_hw_hwtimer_init);
+        return 0;
+    }
+    INIT_DEVICE_EXPORT(rt_hw_hwtimer_init);
