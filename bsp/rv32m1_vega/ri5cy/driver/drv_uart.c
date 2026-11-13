@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
- * Date           Author       Notes
- * 2018/10/28     Bernard      Unify UART driver for FSL library.
+ * Date           Author            Notes
+ * 2018/10/28     Bernard           Unify UART driver for FSL library.
+ * 2019/09/07     niannianyouyu     Add the driver of UART1
  */
 
 #include <rthw.h>
@@ -30,7 +31,7 @@ static rt_err_t  uart_configure(struct rt_serial_device *serial, struct serial_c
 static rt_err_t  uart_control(struct rt_serial_device *serial, int cmd, void *arg);
 static int       uart_putc(struct rt_serial_device *serial, char c);
 static int       uart_getc(struct rt_serial_device *serial);
-static rt_size_t uart_dma_transmit(struct rt_serial_device *serial, rt_uint8_t *buf, rt_size_t size, int direction);
+static rt_ssize_t uart_dma_transmit(struct rt_serial_device *serial, rt_uint8_t *buf, rt_size_t size, int direction);
 
 static void     uart_irq_handler(int irqno, void *param);
 
@@ -54,6 +55,15 @@ void LPUART0_IRQHandler(void)
 }
 #endif
 
+#if defined(BSP_USING_UART1)
+struct rt_serial_device serial1;
+
+void LPUART1_IRQHandler(void)
+{
+    uart_isr(&serial1);
+}
+#endif
+
 static const struct fsl_uart uarts[] =
 {
 #ifdef BSP_USING_UART0
@@ -63,8 +73,17 @@ static const struct fsl_uart uarts[] =
         &serial0,
         "uart0",
     },
+    #ifdef BSP_USING_UART1
+    {
+        LPUART1,
+        LPUART1_IRQn,
+        &serial1,
+        "uart1",
+    },
+#endif
 #endif
 };
+
 
 /*
  * UART Initiation
@@ -107,7 +126,7 @@ static rt_err_t uart_configure(struct rt_serial_device *serial, struct serial_co
 
     switch (cfg->data_bits)
     {
-#if defined(FSL_FEATURE_LPUART_HAS_7BIT_DATA_SUPPORT) && FSL_FEATURE_LPUART_HAS_7BIT_DATA_SUPPORT        
+#if defined(FSL_FEATURE_LPUART_HAS_7BIT_DATA_SUPPORT) && FSL_FEATURE_LPUART_HAS_7BIT_DATA_SUPPORT
     case DATA_BITS_7:
         config.dataBitsCount = kLPUART_SevenDataBits;
         break;
@@ -146,8 +165,14 @@ static rt_err_t uart_configure(struct rt_serial_device *serial, struct serial_co
 
     CLOCK_SetIpSrc(kCLOCK_Lpuart0, kCLOCK_IpSrcFircAsync);
 
-    uint32_t uartClkSrcFreq = CLOCK_GetIpFreq(kCLOCK_Lpuart0);
-    LPUART_Init(uart->uart_base, &config, uartClkSrcFreq);
+    uint32_t uartClkSrcFreq0 = CLOCK_GetIpFreq(kCLOCK_Lpuart0);
+    LPUART_Init(uart->uart_base, &config, uartClkSrcFreq0);
+    LPUART_EnableInterrupts(uart->uart_base, kLPUART_RxDataRegFullInterruptEnable);
+
+    CLOCK_SetIpSrc(kCLOCK_Lpuart1, kCLOCK_IpSrcFircAsync);
+
+    uint32_t uartClkSrcFreq1 = CLOCK_GetIpFreq(kCLOCK_Lpuart1);
+    LPUART_Init(uart->uart_base, &config, uartClkSrcFreq1);
     LPUART_EnableInterrupts(uart->uart_base, kLPUART_RxDataRegFullInterruptEnable);
 
     return RT_EOK;
@@ -203,7 +228,7 @@ static int uart_getc(struct rt_serial_device *serial)
     return ch;
 }
 
-static rt_size_t uart_dma_transmit(struct rt_serial_device *serial, rt_uint8_t *buf, rt_size_t size, int direction)
+static rt_ssize_t uart_dma_transmit(struct rt_serial_device *serial, rt_uint8_t *buf, rt_size_t size, int direction)
 {
     return (0);
 }

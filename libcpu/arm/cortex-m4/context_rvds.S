@@ -10,6 +10,7 @@
 ; * 2013-06-18     aozima       add restore MSP feature.
 ; * 2013-06-23     aozima       support lazy stack optimized.
 ; * 2018-07-24     aozima       enhancement hard fault exception handler.
+; * 2024-08-13     Evlers       allows rewrite to interrupt enable/disable api to support independent interrupts management
 ; */
 
 ;/**
@@ -20,7 +21,7 @@
 SCB_VTOR        EQU     0xE000ED08               ; Vector Table Offset Register
 NVIC_INT_CTRL   EQU     0xE000ED04               ; interrupt control state register
 NVIC_SYSPRI2    EQU     0xE000ED20               ; system priority register (2)
-NVIC_PENDSV_PRI EQU     0x00FF0000               ; PendSV priority value (lowest)
+NVIC_PENDSV_PRI EQU     0xFFFF0000               ; PendSV and SysTick priority value (lowest)
 NVIC_PENDSVSET  EQU     0x10000000               ; value to trigger PendSV exception
 
     AREA |.text|, CODE, READONLY, ALIGN=2
@@ -36,7 +37,7 @@ NVIC_PENDSVSET  EQU     0x10000000               ; value to trigger PendSV excep
 ; * rt_base_t rt_hw_interrupt_disable();
 ; */
 rt_hw_interrupt_disable    PROC
-    EXPORT  rt_hw_interrupt_disable
+    EXPORT  rt_hw_interrupt_disable [WEAK]
     MRS     r0, PRIMASK
     CPSID   I
     BX      LR
@@ -46,7 +47,7 @@ rt_hw_interrupt_disable    PROC
 ; * void rt_hw_interrupt_enable(rt_base_t level);
 ; */
 rt_hw_interrupt_enable    PROC
-    EXPORT  rt_hw_interrupt_enable
+    EXPORT  rt_hw_interrupt_enable [WEAK]
     MSR     PRIMASK, r0
     BX      LR
     ENDP
@@ -186,7 +187,7 @@ rt_hw_context_switch_to    PROC
     MOV     r0, #1
     STR     r0, [r1]
 
-    ; set the PendSV exception priority
+    ; set the PendSV and SysTick exception priority
     LDR     r0, =NVIC_SYSPRI2
     LDR     r1, =NVIC_PENDSV_PRI
     LDR.W   r2, [r0,#0x00]       ; read
@@ -208,6 +209,14 @@ rt_hw_context_switch_to    PROC
     CPSIE   F
     CPSIE   I
 
+    ; clear the BASEPRI register to disable masking priority
+    MOV     r0, #0x00
+    MSR     BASEPRI, r0
+
+    ; ensure PendSV exception taken place before subsequent operation
+    DSB
+    ISB
+
     ; never reach here!
     ENDP
 
@@ -227,10 +236,21 @@ HardFault_Handler    PROC
     MRSEQ   r0, msp                 ; [2]=0 ==> Z=1, get fault context from handler.
     MRSNE   r0, psp                 ; [2]=1 ==> Z=0, get fault context from thread.
 
-    STMFD   r0!, {r4 - r11}         ; push r4 - r11 register
     IF      {FPU} != "SoftVFP"
-    STMFD   r0!, {lr}               ; push dummy for flag
+    TST     lr, #0x10               ; if(!EXC_RETURN[4])
+    VSTMFDEQ r0!, {d8 - d15}        ; push FPU register s16~s31
     ENDIF
+
+    STMFD   r0!, {r4 - r11}         ; push r4 - r11 register
+
+    IF      {FPU} != "SoftVFP"
+    MOV     r4, #0x00               ; flag = 0
+
+    TST     lr, #0x10               ; if(!EXC_RETURN[4])
+    MOVEQ   r4, #0x01               ; flag = 1
+    STMFD   r0!, {r4}               ; push flag
+    ENDIF
+
     STMFD   r0!, {lr}               ; push exec_return register
 
     TST     lr, #0x04               ; if(!EXC_RETURN[2])

@@ -6,7 +6,7 @@
 #define RT_NAME_MAX	   6
 
 /* RT_ALIGN_SIZE*/
-#define RT_ALIGN_SIZE	4
+#define RT_ALIGN_SIZE	8
 
 /* PRIORITY_MAX */
 #define RT_THREAD_PRIORITY_MAX	8
@@ -17,6 +17,7 @@
 /* SECTION: RT_DEBUG */
 /* Thread Debug */
 #define RT_DEBUG
+#define RT_DEBUG_COLOR
 //#define RT_DEBUG_INIT 1
 #define RT_USING_OVERFLOW_CHECK
 
@@ -29,7 +30,7 @@
 /* #define RT_USING_TIMER_SOFT */
 #define RT_TIMER_THREAD_PRIO		4
 #define RT_TIMER_THREAD_STACK_SIZE	512
-#define RT_TIMER_TICK_PER_SECOND	100
+#define RT_TICK_PER_SECOND	100
 
 /* SECTION: IPC */
 /* Using Semaphore*/
@@ -68,6 +69,7 @@
 #define RT_USING_DEVICE_IPC
 // <bool name="RT_USING_SERIAL" description="Using Serial" default="true" />
 #define RT_USING_SERIAL
+#define RT_SERIAL_USING_DMA
 
 /* SECTION: Console options */
 #define RT_USING_CONSOLE

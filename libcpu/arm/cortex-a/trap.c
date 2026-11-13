@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2018, RT-Thread Development Team
+ * Copyright (c) 2006-2021, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -8,17 +8,87 @@
  * 2013-07-20     Bernard      first version
  */
 
-#include <rtthread.h>
 #include <rthw.h>
+#include <rtthread.h>
 #include <board.h>
+#include <backtrace.h>
 
-#include "armv7.h"
+#include "interrupt.h"
+#include "mm_fault.h"
 
-#include "gic.h"
+#include <rtdbg.h>
 
-extern struct rt_thread *rt_current_thread;
 #ifdef RT_USING_FINSH
 extern long list_thread(void);
+#endif
+
+#ifdef RT_USING_SMART
+#include <lwp.h>
+#include <lwp_arch.h>
+
+#ifdef LWP_USING_CORE_DUMP
+#include <lwp_core_dump.h>
+#endif
+
+void check_user_fault(struct rt_hw_exp_stack *regs, uint32_t pc_adj, char *info)
+{
+    uint32_t mode = regs->cpsr;
+
+    if ((mode & 0x1f) == 0x10)
+    {
+        rt_kprintf("%s! pc = 0x%08x\n", info, regs->pc - pc_adj);
+#ifdef LWP_USING_CORE_DUMP
+        lwp_core_dump(regs, pc_adj);
+#endif
+        sys_exit_group(-1);
+    }
+}
+
+int check_data_abort(struct rt_hw_exp_stack *regs)
+{
+    struct rt_lwp *lwp;
+    void *dfar = RT_NULL;
+    rt_base_t dfsr = RT_NULL;
+    __asm__ volatile("mrc p15, 0, %0, c6, c0, 0" : "=r"(dfar));
+    __asm__ volatile("mrc p15, 0, %0, c5, c0, 0" : "=r"(dfsr));
+
+    struct rt_aspace_fault_msg msg = {
+        .fault_op = MM_FAULT_OP_WRITE,
+        .fault_type = MM_FAULT_TYPE_PAGE_FAULT,
+        .fault_vaddr = dfar,
+    };
+    lwp = lwp_self();
+    if (lwp && rt_aspace_fault_try_fix(lwp->aspace, &msg))
+    {
+        regs->pc -= 8;
+        return 1;
+    }
+
+    return 0;
+}
+
+int check_prefetch_abort(struct rt_hw_exp_stack *regs)
+{
+    struct rt_lwp *lwp;
+    void *ifar = RT_NULL;
+    rt_base_t ifsr = RT_NULL;
+    __asm__ volatile("mrc p15, 0, %0, c6, c0, 2" : "=r"(ifar));
+    __asm__ volatile("mrc p15, 0, %0, c5, c0, 1" : "=r"(ifsr));
+
+    struct rt_aspace_fault_msg msg = {
+        .fault_op = MM_FAULT_OP_READ,
+        .fault_type = MM_FAULT_TYPE_PAGE_FAULT,
+        .fault_vaddr = ifar,
+    };
+    lwp = lwp_self();
+    if (lwp && rt_aspace_fault_try_fix(lwp->aspace, &msg))
+    {
+        regs->pc -= 4;
+        return 1;
+    }
+
+    return 0;
+}
 #endif
 
 /**
@@ -35,6 +105,18 @@ void rt_hw_show_register(struct rt_hw_exp_stack *regs)
     rt_kprintf("fp :0x%08x ip :0x%08x\n", regs->fp, regs->ip);
     rt_kprintf("sp :0x%08x lr :0x%08x pc :0x%08x\n", regs->sp, regs->lr, regs->pc);
     rt_kprintf("cpsr:0x%08x\n", regs->cpsr);
+#ifdef RT_USING_SMART
+    {
+        uint32_t v;
+        asm volatile ("MRC p15, 0, %0, c5, c0, 0":"=r"(v));
+        rt_kprintf("dfsr:0x%08x\n", v);
+        asm volatile ("MRC p15, 0, %0, c2, c0, 0":"=r"(v));
+        rt_kprintf("ttbr0:0x%08x\n", v);
+        asm volatile ("MRC p15, 0, %0, c6, c0, 0":"=r"(v));
+        rt_kprintf("dfar:0x%08x\n", v);
+        rt_kprintf("0x%08x -> 0x%08x\n", v, rt_kmem_v2p((void *)v));
+    }
+#endif
 }
 
 /**
@@ -45,8 +127,46 @@ void rt_hw_show_register(struct rt_hw_exp_stack *regs)
  *
  * @note never invoke this function in application
  */
+#ifdef RT_USING_FPU
+void set_fpexc(rt_uint32_t val);
+#endif
 void rt_hw_trap_undef(struct rt_hw_exp_stack *regs)
 {
+#ifdef RT_USING_FPU
+    {
+        uint32_t ins;
+        uint32_t addr;
+
+        if (regs->cpsr & (1 << 5))
+        {
+            /* thumb mode */
+            addr = regs->pc - 2;
+            ins = (uint32_t)*(uint16_t *)addr;
+            if ((ins & (3 << 11)) != 0)
+            {
+                /* 32 bit ins */
+                ins <<= 16;
+                ins += *(uint16_t *)(addr + 2);
+            }
+        }
+        else
+        {
+            addr = regs->pc - 4;
+            ins = *(uint32_t *)addr;
+        }
+        if ((ins & 0xe00) == 0xa00)
+        {
+            /* float ins */
+            set_fpexc(1U << 30);
+            regs->pc = addr;
+            return;
+        }
+    }
+#endif
+#ifdef RT_USING_SMART
+    check_user_fault(regs, 4, "User undefined instruction");
+#endif
+    rt_unwind(regs, 4);
     rt_kprintf("undefined instruction:\n");
     rt_hw_show_register(regs);
 #ifdef RT_USING_FINSH
@@ -84,6 +204,18 @@ void rt_hw_trap_swi(struct rt_hw_exp_stack *regs)
  */
 void rt_hw_trap_pabt(struct rt_hw_exp_stack *regs)
 {
+#ifdef RT_USING_SMART
+    if (dbg_check_event(regs, 4))
+    {
+        return;
+    }
+    if (check_prefetch_abort(regs))
+    {
+        return;
+    }
+    check_user_fault(regs, 4, "User prefetch abort");
+#endif
+    rt_unwind(regs, 4);
     rt_kprintf("prefetch abort:\n");
     rt_hw_show_register(regs);
 #ifdef RT_USING_FINSH
@@ -102,6 +234,18 @@ void rt_hw_trap_pabt(struct rt_hw_exp_stack *regs)
  */
 void rt_hw_trap_dabt(struct rt_hw_exp_stack *regs)
 {
+#ifdef RT_USING_SMART
+    if (dbg_check_event(regs, 8))
+    {
+        return;
+    }
+    if (check_data_abort(regs))
+    {
+        return;
+    }
+    check_user_fault(regs, 8, "User data abort");
+#endif
+    rt_unwind(regs, 8);
     rt_kprintf("data abort:");
     rt_hw_show_register(regs);
 #ifdef RT_USING_FINSH
@@ -129,30 +273,55 @@ void rt_hw_trap_resv(struct rt_hw_exp_stack *regs)
 
 void rt_hw_trap_irq(void)
 {
+#ifdef SOC_BCM283x
+    extern rt_uint8_t core_timer_flag;
     void *param;
+    uint32_t irq;
     rt_isr_handler_t isr_func;
     extern struct rt_irq_desc isr_table[];
+    uint32_t value = 0;
+    value = IRQ_PEND_BASIC & 0x3ff;
 
-    // vectNum = RESERVED[31:13] | CPUID[12:10] | INTERRUPT_ID[9:0]
-    // send ack and get ID source
-    uint32_t vectNum = gic_read_irq_ack();
-
-    // Check that INT_ID isn't 1023 or 1022 (spurious interrupt)
-    if (vectNum & 0x0200)
+    if(core_timer_flag != 0)
     {
-        gic_write_end_of_irq(vectNum);  // send end of irq
+        uint32_t cpu_id = rt_hw_cpu_id();
+        uint32_t int_source = CORE_IRQSOURCE(cpu_id);
+        if (int_source & 0x0f)
+        {
+            if (int_source & 0x08)
+            {
+                isr_func = isr_table[IRQ_ARM_TIMER].handler;
+                #ifdef RT_USING_INTERRUPT_INFO
+                            isr_table[IRQ_ARM_TIMER].counter++;
+                #endif
+                if (isr_func)
+                {
+                    param = isr_table[IRQ_ARM_TIMER].param;
+                    isr_func(IRQ_ARM_TIMER, param);
+                }
+            }
+        }
     }
-    else
+
+    /* local interrupt*/
+    if (value)
     {
-        // copy the local value to the global image of CPUID
-        unsigned cpu = (vectNum >> 10) & 0x7;
-        unsigned irq = vectNum & 0x1FF;
+        if (value & (1 << 8))
+        {
+            value = IRQ_PEND1;
+            irq = __rt_ffs(value) - 1;
+        }
+        else if (value & (1 << 9))
+        {
+            value = IRQ_PEND2;
+            irq = __rt_ffs(value) + 31;
+        }
+        else
+        {
+            value &= 0x0f;
+            irq = __rt_ffs(value) + 63;
+        }
 
-        /* skip warning */
-        cpu = cpu;
-
-        // Call the service routine stored in the handlers array. If there isn't
-        // one for this IRQ, then call the default handler.
         /* get interrupt service routine */
         isr_func = isr_table[irq].handler;
 #ifdef RT_USING_INTERRUPT_INFO
@@ -165,13 +334,57 @@ void rt_hw_trap_irq(void)
             /* turn to interrupt service routine */
             isr_func(irq, param);
         }
-
-        // Signal the end of the irq.
-        gic_write_end_of_irq(vectNum);
     }
+#else
+    void *param;
+    int ir, ir_real;
+    rt_isr_handler_t isr_func;
+    extern struct rt_irq_desc isr_table[];
+
+    ir = rt_hw_interrupt_get_irq();
+
+    ir_real = ir & 0x3ff;
+    if (ir == 1023)
+    {
+        /* Spurious interrupt */
+        return;
+    }
+
+    /* get interrupt service routine */
+    isr_func = isr_table[ir_real].handler;
+#ifdef RT_USING_INTERRUPT_INFO
+    isr_table[ir_real].counter++;
+#endif
+    if (isr_func)
+    {
+        /* Interrupt for myself. */
+        param = isr_table[ir_real].param;
+        /* turn to interrupt service routine */
+        isr_func(ir, param);
+    }
+
+    /* end of interrupt */
+    rt_hw_interrupt_ack(ir);
+#endif
 }
 
 void rt_hw_trap_fiq(void)
 {
-    /* TODO */
+    void *param;
+    int ir;
+    rt_isr_handler_t isr_func;
+    extern struct rt_irq_desc isr_table[];
+
+    ir = rt_hw_interrupt_get_irq();
+
+    /* get interrupt service routine */
+    isr_func = isr_table[ir].handler;
+    param = isr_table[ir].param;
+
+    /* turn to interrupt service routine */
+    isr_func(ir, param);
+
+    /* end of interrupt */
+    rt_hw_interrupt_ack(ir);
 }
+

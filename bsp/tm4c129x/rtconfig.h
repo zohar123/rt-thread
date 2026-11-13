@@ -1,24 +1,89 @@
 #ifndef RT_CONFIG_H__
 #define RT_CONFIG_H__
 
-/* Automatically generated file; DO NOT EDIT. */
-/* RT-Thread Configuration */
-
 /* RT-Thread Kernel */
 
-#define RT_NAME_MAX 8
-#define RT_ALIGN_SIZE 4
+/* klibc options */
+
+/* rt_vsnprintf options */
+
+/* end of rt_vsnprintf options */
+
+/* rt_vsscanf options */
+
+/* end of rt_vsscanf options */
+
+/* rt_memset options */
+
+/* end of rt_memset options */
+
+/* rt_memcpy options */
+
+/* end of rt_memcpy options */
+
+/* rt_memmove options */
+
+/* end of rt_memmove options */
+
+/* rt_memcmp options */
+
+/* end of rt_memcmp options */
+
+/* rt_strstr options */
+
+/* end of rt_strstr options */
+
+/* rt_strcasecmp options */
+
+/* end of rt_strcasecmp options */
+
+/* rt_strncpy options */
+
+/* end of rt_strncpy options */
+
+/* rt_strcpy options */
+
+/* end of rt_strcpy options */
+
+/* rt_strncmp options */
+
+/* end of rt_strncmp options */
+
+/* rt_strcmp options */
+
+/* end of rt_strcmp options */
+
+/* rt_strlen options */
+
+/* end of rt_strlen options */
+
+/* rt_strnlen options */
+
+/* end of rt_strnlen options */
+/* end of klibc options */
+#define RT_NAME_MAX 12
+#define RT_CPUS_NR 1
+#define RT_ALIGN_SIZE 8
+#define RT_THREAD_PRIORITY_32
 #define RT_THREAD_PRIORITY_MAX 32
 #define RT_TICK_PER_SECOND 100
-#define RT_DEBUG
 #define RT_USING_OVERFLOW_CHECK
-#define RT_DEBUG_INIT 0
-/* RT_DEBUG_THREAD is not set */
 #define RT_USING_HOOK
+#define RT_HOOK_USING_FUNC_PTR
+#define RT_USING_IDLE_HOOK
+#define RT_IDLE_HOOK_LIST_SIZE 4
 #define IDLE_THREAD_STACK_SIZE 256
 #define RT_USING_TIMER_SOFT
 #define RT_TIMER_THREAD_PRIO 4
 #define RT_TIMER_THREAD_STACK_SIZE 512
+
+/* kservice options */
+
+/* end of kservice options */
+#define RT_USING_DEBUG
+#define RT_DEBUGING_ASSERT
+#define RT_DEBUGING_COLOR
+#define RT_DEBUGING_CONTEXT
 
 /* Inter-Thread communication */
 
@@ -27,98 +92,109 @@
 #define RT_USING_EVENT
 #define RT_USING_MAILBOX
 #define RT_USING_MESSAGEQUEUE
-/* RT_USING_SIGNALS is not set */
+/* end of Inter-Thread communication */
 
 /* Memory Management */
 
 #define RT_USING_MEMPOOL
-#define RT_USING_MEMHEAP
-#define RT_USING_HEAP
 #define RT_USING_SMALL_MEM
-/* RT_USING_SLAB is not set */
-
-/* Kernel Device Object */
-
+#define RT_USING_MEMHEAP
+#define RT_MEMHEAP_FAST_MODE
+#define RT_USING_SMALL_MEM_AS_HEAP
+#define RT_USING_HEAP
+/* end of Memory Management */
 #define RT_USING_DEVICE
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128
 #define RT_CONSOLE_DEVICE_NAME "uart0"
-/* RT_USING_MODULE is not set */
+#define RT_USING_CONSOLE_OUTPUT_CTL
+#define RT_VER_NUM 0x50300
+#define RT_BACKTRACE_LEVEL_MAX_NR 32
+/* end of RT-Thread Kernel */
 
 /* RT-Thread Components */
 
 #define RT_USING_COMPONENTS_INIT
 #define RT_USING_USER_MAIN
-
-/* C++ features */
-
-/* RT_USING_CPLUSPLUS is not set */
-
-/* Command shell */
-
+#define RT_MAIN_THREAD_STACK_SIZE 2048
+#define RT_MAIN_THREAD_PRIORITY 10
+#define RT_USING_MSH
 #define RT_USING_FINSH
-#define FINSH_USING_HISTORY
-#define FINSH_USING_SYMTAB
-#define FINSH_USING_DESCRIPTION
+#define FINSH_USING_MSH
+#define FINSH_THREAD_NAME "tshell"
 #define FINSH_THREAD_PRIORITY 20
 #define FINSH_THREAD_STACK_SIZE 4096
+#define FINSH_USING_HISTORY
+#define FINSH_HISTORY_LINES 5
+#define FINSH_USING_SYMTAB
 #define FINSH_CMD_SIZE 80
-/* FINSH_USING_AUTH is not set */
-/* FINSH_USING_MSH is not set */
+#define MSH_USING_BUILT_IN_COMMANDS
+#define FINSH_USING_DESCRIPTION
+#define FINSH_ARG_MAX 10
+#define FINSH_USING_OPTION_COMPLETION
 
-/* Device virtual file system */
+/* DFS: device virtual file system */
 
-/* RT_USING_DFS is not set */
+/* end of DFS: device virtual file system */
 
 /* Device Drivers */
 
 #define RT_USING_DEVICE_IPC
+#define RT_UNAMED_PIPE_NUMBER 64
 #define RT_USING_SERIAL
-/* RT_USING_CAN is not set */
-/* RT_USING_HWTIMER is not set */
-/* RT_USING_I2C is not set */
-/* RT_USING_PIN is not set */
-/* RT_USING_MTD_NOR is not set */
-/* RT_USING_MTD_NAND is not set */
-/* RT_USING_RTC is not set */
-/* RT_USING_SDIO is not set */
-/* RT_USING_SPI is not set */
-/* RT_USING_WDT is not set */
-/* RT_USING_USB_HOST is not set */
-/* RT_USING_USB_DEVICE is not set */
+#define RT_USING_SERIAL_V1
+#define RT_SERIAL_USING_DMA
+#define RT_SERIAL_RB_BUFSZ 64
+/* end of Device Drivers */
 
-/* POSIX layer and C standard library */
+/* C/C++ and POSIX layer */
 
-/* RT_USING_LIBC is not set */
-/* RT_USING_PTHREADS is not set */
+/* ISO-ANSI C layer */
 
-/* Network stack */
+/* Timezone and Daylight Saving Time */
 
-/* light weight TCP/IP stack */
+#define RT_LIBC_USING_LIGHT_TZ_DST
+#define RT_LIBC_TZ_DEFAULT_HOUR 8
+#define RT_LIBC_TZ_DEFAULT_MIN 0
+#define RT_LIBC_TZ_DEFAULT_SEC 0
+/* end of Timezone and Daylight Saving Time */
+/* end of ISO-ANSI C layer */
 
+/* POSIX (Portable Operating System Interface) layer */
+
+
+/* Interprocess Communication (IPC) */
+
+
+/* Socket is in the 'Network' category */
+
+/* end of Interprocess Communication (IPC) */
+/* end of POSIX (Portable Operating System Interface) layer */
+/* end of C/C++ and POSIX layer */
+
+/* Network */
+
+#define NETDEV_USING_PING
 #define RT_USING_LWIP
 #define RT_USING_LWIP141
-/* RT_USING_LWIP202 is not set */
-/* RT_LWIP_IGMP is not set */
+#define RT_USING_LWIP_VER_NUM 0x10401
+#define RT_LWIP_MEM_ALIGNMENT 4
 #define RT_LWIP_ICMP
-/* RT_LWIP_SNMP is not set */
 #define RT_LWIP_DNS
 #define RT_LWIP_DHCP
 #define IP_SOF_BROADCAST 1
 #define IP_SOF_BROADCAST_RECV 1
-/* LWIP_USING_DHCPD is not set */
 
 /* Static IPv4 Address */
 
 #define RT_LWIP_IPADDR "192.168.1.30"
 #define RT_LWIP_GWADDR "192.168.1.1"
 #define RT_LWIP_MSKADDR "255.255.255.0"
+/* end of Static IPv4 Address */
 #define RT_LWIP_UDP
 #define RT_LWIP_TCP
-/* RT_LWIP_RAW is not set */
-/* RT_LWIP_PPP is not set */
-/* RT_LWIP_PPPOE is not set */
-/* RT_LWIP_PPPOS is not set */
+#define RT_LWIP_RAW
+#define RT_MEMP_NUM_NETCONN 8
 #define RT_LWIP_PBUF_NUM 16
 #define RT_LWIP_RAW_PCB_NUM 4
 #define RT_LWIP_UDP_PCB_NUM 4
@@ -132,63 +208,244 @@
 #define RT_LWIP_ETHTHREAD_PRIORITY 12
 #define RT_LWIP_ETHTHREAD_STACKSIZE 1024
 #define RT_LWIP_ETHTHREAD_MBOX_SIZE 8
-/* RT_LWIP_REASSEMBLY_FRAG is not set */
 #define LWIP_NETIF_STATUS_CALLBACK 1
+#define LWIP_NETIF_LINK_CALLBACK 1
+#define RT_LWIP_NETIF_NAMESIZE 6
 #define SO_REUSE 1
 #define LWIP_SO_RCVTIMEO 1
 #define LWIP_SO_SNDTIMEO 1
 #define LWIP_SO_RCVBUF 1
+#define LWIP_SO_LINGER 0
+#define LWIP_NETIF_LOOPBACK 0
+#define RT_LWIP_USING_PING
+/* end of Network */
 
-/* Modbus master and slave stack */
+/* Memory protection */
 
-/* RT_USING_MODBUS is not set */
-/* RT_USING_NETUTILS is not set */
+/* end of Memory protection */
 
-/* RT-Thread UI Engine */
+/* Utilities */
 
-/* PKG_USING_GUIENGINE is not set */
+/* end of Utilities */
+
+/* Using USB legacy version */
+
+/* end of Using USB legacy version */
+/* end of RT-Thread Components */
+
+/* RT-Thread Utestcases */
+
+/* end of RT-Thread Utestcases */
 
 /* RT-Thread online packages */
 
-/* system packages */
-
-/* PKG_USING_PARTITION is not set */
-/* PKG_USING_SQLITE is not set */
-
 /* IoT - internet of things */
 
-/* PKG_USING_PAHOMQTT is not set */
-/* PKG_USING_WEBCLIENT is not set */
-/* PKG_USING_MONGOOSE is not set */
-/* PKG_USING_WEBTERMINAL is not set */
-/* PKG_USING_CJSON is not set */
-/* PKG_USING_EZXML is not set */
+
+/* Wi-Fi */
 
 /* Marvell WiFi */
 
-/* PKG_USING_MARVELLWIFI is not set */
+/* end of Marvell WiFi */
+
+/* Wiced WiFi */
+
+/* end of Wiced WiFi */
+
+/* CYW43012 WiFi */
+
+/* end of CYW43012 WiFi */
+
+/* BL808 WiFi */
+
+/* end of BL808 WiFi */
+
+/* CYW43439 WiFi */
+
+/* end of CYW43439 WiFi */
+/* end of Wi-Fi */
+
+/* IoT Cloud */
+
+/* end of IoT Cloud */
+/* end of IoT - internet of things */
 
 /* security packages */
 
-/* PKG_USING_MBEDTLS is not set */
+/* end of security packages */
 
 /* language packages */
 
-/* PKG_USING_JERRYSCRIPT is not set */
+/* JSON: JavaScript Object Notation, a lightweight data-interchange format */
+
+/* end of JSON: JavaScript Object Notation, a lightweight data-interchange format */
+
+/* XML: Extensible Markup Language */
+
+/* end of XML: Extensible Markup Language */
+/* end of language packages */
 
 /* multimedia packages */
 
+/* LVGL: powerful and easy-to-use embedded GUI library */
+
+/* end of LVGL: powerful and easy-to-use embedded GUI library */
+
+/* u8g2: a monochrome graphic library */
+
+/* end of u8g2: a monochrome graphic library */
+/* end of multimedia packages */
+
 /* tools packages */
 
-/* PKG_USING_CMBACKTRACE is not set */
-/* PKG_USING_EASYLOGGER is not set */
+/* end of tools packages */
+
+/* system packages */
+
+/* enhanced kernel services */
+
+/* end of enhanced kernel services */
+
+/* acceleration: Assembly language or algorithmic acceleration packages */
+
+/* end of acceleration: Assembly language or algorithmic acceleration packages */
+
+/* CMSIS: ARM Cortex-M Microcontroller Software Interface Standard */
+
+/* end of CMSIS: ARM Cortex-M Microcontroller Software Interface Standard */
+
+/* Micrium: Micrium software products porting for RT-Thread */
+
+/* end of Micrium: Micrium software products porting for RT-Thread */
+/* end of system packages */
+
+/* peripheral libraries and drivers */
+
+/* HAL & SDK Drivers */
+
+/* STM32 HAL & SDK Drivers */
+
+/* end of STM32 HAL & SDK Drivers */
+
+/* Infineon HAL Packages */
+
+/* end of Infineon HAL Packages */
+
+/* Kendryte SDK */
+
+/* end of Kendryte SDK */
+
+/* WCH HAL & SDK Drivers */
+
+/* end of WCH HAL & SDK Drivers */
+
+/* AT32 HAL & SDK Drivers */
+
+/* end of AT32 HAL & SDK Drivers */
+
+/* HC32 DDL Drivers */
+
+/* end of HC32 DDL Drivers */
+
+/* NXP HAL & SDK Drivers */
+
+/* end of NXP HAL & SDK Drivers */
+
+/* NUVOTON Drivers */
+
+/* end of NUVOTON Drivers */
+
+/* GD32 Drivers */
+
+/* end of GD32 Drivers */
+
+/* HPMicro SDK */
+
+/* end of HPMicro SDK */
+
+/* FT32 HAL & SDK Drivers */
+
+/* end of FT32 HAL & SDK Drivers */
+/* end of HAL & SDK Drivers */
+
+/* sensors drivers */
+
+/* end of sensors drivers */
+
+/* touch drivers */
+
+/* end of touch drivers */
+/* end of peripheral libraries and drivers */
+
+/* AI packages */
+
+/* end of AI packages */
+
+/* Signal Processing and Control Algorithm Packages */
+
+/* end of Signal Processing and Control Algorithm Packages */
 
 /* miscellaneous packages */
 
-/* PKG_USING_HELLO is not set */
+/* project laboratory */
 
-/* BSP_SPECIAL CONFIG */
+/* end of project laboratory */
 
+/* samples: kernel and components samples */
+
+/* end of samples: kernel and components samples */
+
+/* entertainment: terminal games and other interesting software packages */
+
+/* end of entertainment: terminal games and other interesting software packages */
+/* end of miscellaneous packages */
+
+/* Arduino libraries */
+
+
+/* Projects and Demos */
+
+/* end of Projects and Demos */
+
+/* Sensors */
+
+/* end of Sensors */
+
+/* Display */
+
+/* end of Display */
+
+/* Timing */
+
+/* end of Timing */
+
+/* Data Processing */
+
+/* end of Data Processing */
+
+/* Data Storage */
+
+/* Communication */
+
+/* end of Communication */
+
+/* Device Control */
+
+/* end of Device Control */
+
+/* Other */
+
+/* end of Other */
+
+/* Signal IO */
+
+/* end of Signal IO */
+
+/* Uncategorized */
+
+/* end of Arduino libraries */
+/* end of RT-Thread online packages */
+#define SOC_TM4C129
 #define RT_USING_UART0
 
 #endif

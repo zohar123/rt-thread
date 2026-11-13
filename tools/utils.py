@@ -20,10 +20,11 @@
 # Change Logs:
 # Date           Author       Notes
 # 2015-01-20     Bernard      Add copyright information
-#
+# 2024-04-21     Bernard      Add ImportModule to import local module
 
 import sys
 import os
+import re
 
 def splitall(loc):
     """
@@ -105,7 +106,7 @@ def xml_indent(elem, level=0):
             elem.tail = i
 
 
-source_ext = ["c", "h", "s", "S", "cpp", "xpm"]
+source_ext = ["c", "h", "s", "S", "cpp", "cxx", "cc", "xpm"]
 source_list = []
 
 def walk_children(child):
@@ -138,7 +139,7 @@ def PrefixPath(prefix, path):
 
     if path.startswith(prefix):
         return True
-    
+
     return False
 
 def ListMap(l):
@@ -196,7 +197,7 @@ def ProjectInfo(env):
 
     # process FILES and DIRS
     if len(FILES):
-        # use absolute path 
+        # use absolute path
         for i in range(len(FILES)):
             FILES[i] = os.path.abspath(str(FILES[i]))
             DIRS.append(os.path.dirname(FILES[i]))
@@ -210,12 +211,16 @@ def ProjectInfo(env):
 
     # process CPPPATH
     if len(CPPPATH):
-        # use absolute path 
+        # use absolute path
         for i in range(len(CPPPATH)):
             CPPPATH[i] = os.path.abspath(CPPPATH[i])
 
         # remove repeat path
-        paths = [i for i in set(CPPPATH)]
+        paths = []
+        for p in CPPPATH:
+            if p not in paths:
+                paths.append(p)
+
         CPPPATH = []
         for path in paths:
             if PrefixPath(RTT_ROOT, path):
@@ -226,8 +231,6 @@ def ProjectInfo(env):
 
             else:
                 CPPPATH += ['"%s",' % path.replace('\\', '/')]
-
-        CPPPATH.sort()
 
     # process CPPDEFINES
     if len(CPPDEFINES):
@@ -245,10 +248,11 @@ def ProjectInfo(env):
     return proj
 
 def VersionCmp(ver1, ver2):
-    la=[];
+    la=[]
     if ver1:
-        la = ver1.split('.')
-    lb = ver2.split('.')
+        la = re.split("[. ]", ver1)
+    lb = re.split("[. ]", ver2)
+
     f = 0
     if len(la) > len(lb):
         f = len(la)
@@ -262,7 +266,7 @@ def VersionCmp(ver1, ver2):
                 continue
             else:
                 return -1
-        except IndexError as e:
+        except (IndexError, ValueError) as e:
             if len(la) > len(lb):
                 return 1
             else:
@@ -271,10 +275,10 @@ def VersionCmp(ver1, ver2):
 
 def GCCC99Patch(cflags):
     import building
-    gcc_version = building.GetDepend('GCC_VERSION')
+    gcc_version = building.GetDepend('GCC_VERSION_STR')
     if gcc_version:
         gcc_version = gcc_version.replace('"', '')
-    if VersionCmp(gcc_version, "4.8.0"):
+    if VersionCmp(gcc_version, "4.8.0") == 1:
         # remove -std=c99 after GCC 4.8.x
         cflags = cflags.replace('-std=c99', '')
 
@@ -288,4 +292,37 @@ def ReloadModule(module):
     else:
         reload(module)
 
-    return
+def ImportModule(module):
+    import sys
+    if sys.version_info.major >= 3:
+        import importlib.util
+        path = os.path.dirname(__file__)
+        spec = importlib.util.spec_from_file_location(module, os.path.join(path, module+".py"))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+    else:
+        return __import__(module, fromlist=[module])
+
+def VerTuple(version_str):
+    ver_parts = version_str.split('.')
+    ver = tuple(int(part) for part in ver_parts)
+
+    return ver
+
+def CmdExists(cmd):
+    # Check if the path directly points to an existing file.
+    if os.path.isfile(cmd):
+        return True
+    else:
+        # On Windows systems, check for common script file extensions
+        # if the file does not exist as specified.
+        if sys.platform.startswith('win'):
+            # Loop through possible extensions to cover cases where the extension is omitted in the input.
+            for ext in ['.exe', '.bat', '.ps1']:
+                # Append the extension to the command path and check if this file exists.
+                if os.path.isfile(cmd + ext):
+                    return True
+
+    # If none of the checks confirm the file exists, return False.
+    return False

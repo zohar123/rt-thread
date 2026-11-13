@@ -1,11 +1,7 @@
 ;/*
-; * File      : context_iar.S
-; * This file is part of RT-Thread RTOS
-; * COPYRIGHT (C) 2006 - 2018, RT-Thread Development Team
+; * Copyright (c) 2006-2018, RT-Thread Development Team
 ; *
-; * The license and distribution terms for this file may be
-; * found in the file LICENSE in this distribution or at
-; * http://www.rt-thread.org/license/LICENSE
+; * SPDX-License-Identifier: Apache-2.0
 ; *
 ; * Change Logs:
 ; * Date           Author       Notes
@@ -15,6 +11,7 @@
 ; * 2013-06-18     aozima       add restore MSP feature.
 ; * 2013-06-23     aozima       support lazy stack optimized.
 ; * 2018-07-24     aozima       enhancement hard fault exception handler.
+; * 2024-08-13     Evlers       allows rewrite to interrupt enable/disable api to support independent interrupts management
 ; */
 
 ;/**
@@ -25,7 +22,7 @@
 SCB_VTOR        EQU     0xE000ED08               ; Vector Table Offset Register
 NVIC_INT_CTRL   EQU     0xE000ED04               ; interrupt control state register
 NVIC_SYSPRI2    EQU     0xE000ED20               ; system priority register (2)
-NVIC_PENDSV_PRI EQU     0x00FF0000               ; PendSV priority value (lowest)
+NVIC_PENDSV_PRI EQU     0xFFFF0000               ; PendSV and SysTick priority value (lowest)
 NVIC_PENDSVSET  EQU     0x10000000               ; value to trigger PendSV exception
 
     SECTION    .text:CODE(2)
@@ -40,7 +37,8 @@ NVIC_PENDSVSET  EQU     0x10000000               ; value to trigger PendSV excep
 ;/*
 ; * rt_base_t rt_hw_interrupt_disable();
 ; */
-    EXPORT rt_hw_interrupt_disable
+    PUBWEAK rt_hw_interrupt_disable
+    SECTION .text:CODE:REORDER:NOROOT(2)
 rt_hw_interrupt_disable:
     MRS     r0, PRIMASK
     CPSID   I
@@ -49,7 +47,8 @@ rt_hw_interrupt_disable:
 ;/*
 ; * void rt_hw_interrupt_enable(rt_base_t level);
 ; */
-    EXPORT  rt_hw_interrupt_enable
+    PUBWEAK  rt_hw_interrupt_enable
+    SECTION .text:CODE:REORDER:NOROOT(2)
 rt_hw_interrupt_enable:
     MSR     PRIMASK, r0
     BX      LR
@@ -190,7 +189,7 @@ rt_hw_context_switch_to:
     MOV     r0, #1
     STR     r0, [r1]
 
-    ; set the PendSV exception priority
+    ; set the PendSV and SysTick exception priority
     LDR     r0, =NVIC_SYSPRI2
     LDR     r1, =NVIC_PENDSV_PRI
     LDR.W   r2, [r0,#0x00]       ; read
@@ -212,6 +211,14 @@ rt_hw_context_switch_to:
     CPSIE   F
     CPSIE   I
 
+    ; clear the BASEPRI register to disable masking priority
+    MOV     r0, #0x00
+    MSR     BASEPRI, r0
+
+    ; ensure PendSV exception taken place before subsequent operation
+    DSB
+    ISB
+
     ; never reach here!
 
 ; compatible with old version
@@ -230,14 +237,28 @@ HardFault_Handler:
     MRS     r0, psp                 ; get fault context from thread.
 _get_sp_done
 
-    STMFD   r0!, {r4 - r11}         ; push r4 - r11 register
-    ;STMFD   r0!, {lr}               ; push exec_return register
 #if defined ( __ARMVFP__ )
-    SUB     r0, r0, #0x04           ; push dummy for flag
-    STR     lr, [r0]
+    TST     lr, #0x10               ; if(!EXC_RETURN[4])
+    BNE     skip_push_fpu_hd
+    VSTMDB  r0!, {d8 - d15}         ; push FPU register s16~s31
+skip_push_fpu_hd
 #endif
+
+    STMFD   r0!, {r4 - r11}         ; push r4 - r11 register
+
+#if defined ( __ARMVFP__ )
+    MOV     r4, #0x00               ; flag = 0
+
+    TST     lr, #0x10               ; if(!EXC_RETURN[4])
+    BNE     push_flag_hd
+    MOV     r4, #0x01               ; flag = 1
+push_flag_hd
     SUB     r0, r0, #0x04
-    STR     lr, [r0]
+    STR     r4, [r0]                ; push flag
+#endif
+
+    SUB     r0, r0, #0x04
+    STR     lr, [r0]                ; push exec_return register
 
     TST     lr, #0x04               ; if(!EXC_RETURN[2])
     BEQ     _update_msp
